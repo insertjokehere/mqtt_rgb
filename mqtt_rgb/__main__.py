@@ -17,6 +17,7 @@ class App():
 
     def on_term(self, *args, **kwargs):
         unicorn.off()
+        self.client.disconnect()
         sys.exit(0)
 
     def on_connect(self, client, userdata, flags, rc):
