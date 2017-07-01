@@ -3,6 +3,8 @@ import time
 import json
 import unicornhat as unicorn
 import argparse
+import signal
+import sys
 
 
 class App():
@@ -12,6 +14,10 @@ class App():
         unicorn.rotation(self.args.rotation)
         unicorn.brightness(self.args.brightness)
         time.sleep(1)
+
+    def on_term(self, *args, **kwargs):
+        unicorn.off()
+        sys.exit(0)
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
@@ -57,6 +63,7 @@ class App():
         self.parser = self.build_args()
         self.args = self.parser.parse_args()
         self._init_unicorn()
+        signal.signal(signal.SIGTERM, self.on_term)
         self._connect()
         self._run()
 
