@@ -37,3 +37,11 @@ class App():
 
     def _run(self):
         self.client.loop_forever()
+
+    def run(self):
+        self._init_unicorn()
+        self._connect()
+        self._run()
+
+if __name__ == "__main__":
+    App().run()
