@@ -1,5 +1,6 @@
-import paho.mqtt.client as mqtt
+import paho.mqtt.publish as publish
 import argparse
+import json
 
 
 class Check():
@@ -8,8 +9,8 @@ class Check():
 
     def build_args(self):
         parser = argparse.ArgumentParser(description=self.description)
-        parser.add_argument('-x', type=int)
-        parser.add_argument('-y', type=int)
+        parser.add_argument('-x', type=int, required=True)
+        parser.add_argument('-y', type=int, required=True)
         parser.add_argument('--prefix', type=str, default="unicorn")
         parser.add_argument('--mqtt-host', default="localhost")
         parser.add_argument('--mqtt-port', type=int, default=1883)
@@ -31,9 +32,8 @@ class Check():
             'b': b
         })
 
-        client = mqtt.Client()
-        client.single(
-            "/".join(self.args.prefix, str(x), str(y)),
+        publish.single(
+            "/".join([self.args.prefix, str(x), str(y)]),
             payload=payload,
             retain=True,
             hostname=self.args.mqtt_host,
