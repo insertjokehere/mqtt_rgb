@@ -33,7 +33,7 @@ class Check():
         })
 
         publish.single(
-            "/".join([self.args.prefix, str(x), str(y)]),
+            "/".join([self.args.prefix, 'pixel', str(x), str(y)]),
             payload=payload,
             retain=True,
             hostname=self.args.mqtt_host,
