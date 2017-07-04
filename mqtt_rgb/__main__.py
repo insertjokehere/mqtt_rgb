@@ -12,7 +12,7 @@ class App():
     def _init_unicorn(self):
         unicorn.set_layout(unicorn.AUTO)
         unicorn.rotation(self.args.rotation)
-        unicorn.brightness(self.args.brightness)
+        unicorn.brightness(0.2)
         time.sleep(1)
 
     def on_term(self, *args, **kwargs):
@@ -25,11 +25,26 @@ class App():
 
         # Subscribing in on_connect() means that if we lose the connection and
         # reconnect then subscriptions will be renewed.
-        self.client.subscribe("{}/#".format(self.args.prefix))
+        self.client.subscribe("{}/pixel/#/#".format(self.args.prefix))
+        self.client.subscribe("{}/brightness".format(self.args.prefix))
 
     def on_message(self, client, userdata, msg):
 
-        _, x, y = msg.topic.split("/")
+        if msg.topic.startswith("{}/pixel".format(self.args.prefix)):
+            self.on_pixel_message(client, userdata, msg)
+        elif msg.topic == "{}/brightness".format(self.args.prefix):
+            self.on_brightness_message(client, userdata, msg)
+
+    def on_brightness_message(self, client, userdata, msg):
+        try:
+            unicorn.brightness(float(msg.payload.decode('utf-8')))
+            unicorn.show()
+        except Exception as e:
+            print("Failed to update brightness: {}".format(e))
+
+    def on_pixel_message(self, client, userdata, msg):
+
+        _, x, y = msg.topic.rsplit("/", 2)
 
         try:
             colour = json.loads(msg.payload.decode('utf-8'))
@@ -53,7 +68,7 @@ class App():
 
     def build_args(self):
         parser = argparse.ArgumentParser(description='MQTT to Unicorn bridge')
-        parser.add_argument('--brightness', type=float, default=0.5)
+        parser.add_argument('--brightness', type=float, help="This setting is not used anymore")
         parser.add_argument('--rotation', type=int, default=0)
         parser.add_argument('--prefix', type=str, default="unicorn")
         parser.add_argument('--mqtt-host', default="localhost")
