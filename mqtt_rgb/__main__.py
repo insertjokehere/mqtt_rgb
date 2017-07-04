@@ -25,7 +25,7 @@ class App():
 
         # Subscribing in on_connect() means that if we lose the connection and
         # reconnect then subscriptions will be renewed.
-        self.client.subscribe("{}/pixel/#/#".format(self.args.prefix))
+        self.client.subscribe("{}/pixel/#".format(self.args.prefix))
         self.client.subscribe("{}/brightness".format(self.args.prefix))
 
     def on_message(self, client, userdata, msg):
